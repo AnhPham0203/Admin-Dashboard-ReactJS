@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -8,16 +9,27 @@ const Register = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Thực hiện logic đăng ký (kiểm tra thông tin và gửi đến API)
-    if (!username || !password || !email) {
-      setError("Vui lòng điền đầy đủ thông tin.");
-    } else {
-      // Giả sử đăng ký thành công và chuyển hướng người dùng về trang Login
-      navigate("/login");
+    try {
+      const response = await axios.post("http://localhost:5000/auth/register", {
+        username,
+        email,
+        password,
+      });
+      navigate("/verify-code")
+      console.log(response.data);
+      
+    } catch (error) {
+      console.log(error);
+      
     }
+    // if (!username || !password || !email) {
+    //   setError("Vui lòng điền đầy đủ thông tin.");
+    // } else {
+    //   navigate("/login");
+    // }
   };
 
   return (

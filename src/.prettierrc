@@ -1,0 +1,7 @@
+{
+    "semi": true,  // Thêm dấu chấm phẩy ở cuối câu lệnh
+    "trailingComma": "es5", // Thêm dấu phẩy ở cuối các phần tử trong mảng, object
+    "singleQuote": true, // Sử dụng dấu nháy đơn
+    "tabWidth": 2, // Độ rộng tab là 2 khoảng trắng
+    "useTabs": false // Không sử dụng tab
+  }

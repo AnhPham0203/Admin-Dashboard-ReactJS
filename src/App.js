@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -8,34 +6,35 @@ import {
   Navigate,
 } from "react-router-dom";
 import Sidebar from "./components/Sidebar"; // Sidebar
-// import AdminDashboard from "./pages/AdminDashboard"; // Admin Dashboard
 import HomePage from "./pages/HomePage"; // Trang sản phẩm
 import Login from "./auth/Login"; // Trang Login
 import Register from "./auth/Register"; // Trang Register
 import AdminManagement from "./pages/AdminManagement";
-import ForgotPassword from "./auth/Forgot-password";
+import ForgotPassword from "./auth/Reset-password";
+import VerifyEmail from "./auth/VerifyEmail";
+import VerifyCode from "./auth/VerifyCode";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Kiểm tra đăng nhập
-  const [userRole, setUserRole] = useState(''); // Lưu role người dùng
+  const [userRole, setUserRole] = useState(""); // Lưu role người dùng
 
-  // Kiểm tra nếu đã đăng nhập từ trước khi load lại trang
-  // useEffect(() => {
-  //   const user = JSON.parse(localStorage.getItem("user"));
-  //   if (user) {
-  //     setIsAuthenticated(true);
-  //     setUserRole(user.role); // Lưu role của người dùng
-  //   }
-  // }, []);
+  // Kiểm tra trạng thái đăng nhập từ localStorage khi load lại trang
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setIsAuthenticated(true);
+      setUserRole(user.role); // Lưu role của người dùng
+    }
+  }, []);
 
   const handleLogin = (role) => {
-    console.log("role= ", role);
-
+  
     // Sau khi đăng nhập thành công, lưu thông tin người dùng vào localStorage
     localStorage.setItem("user", JSON.stringify({ role }));
 
     setIsAuthenticated(true);
     setUserRole(role); // Lưu role của người dùng
+    console.log("role= ", role);
   };
 
   const handleLogout = () => {
@@ -43,6 +42,17 @@ const App = () => {
     localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUserRole(""); // Xóa role
+  };
+
+  // PrivateRoute component để bảo vệ các route
+  const PrivateRoute = ({ children, role }) => {
+    if (!isAuthenticated) {
+      return <Navigate to="/login" />;
+    }
+    if (role && role !== userRole) {
+      return <Navigate to="/" />;
+    }
+    return children;
   };
 
   return (
@@ -57,24 +67,30 @@ const App = () => {
         {/* Route cho trang Register */}
         <Route path="/register" element={<Register />} />
 
-        {/* Route cho trang forgot-password */}
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 
-        {/* <Route path="/admin" element={<AdminManagement />} /> */}
+        <Route path="/verify-code" element={<VerifyCode />} />
 
-        {/* Route cho Admin Dashboard */}
+        {/* Route cho trang Forgot Password */}
+        <Route path="/reset-password" element={<ForgotPassword />} />
+
+        <Route path="/admin-dashboard/*" element={<Sidebar />}>
+          {/* Các route con hiển thị trong Content Area */}
+          <Route path="admin-manage" element={<AdminManagement />} />
+          
+        </Route>
+
+      
+        {/* <Route path="admin-manage" element={<AdminManagement />}/> */}
+        
+
+        {/* Route cho Admin Management */}
         <Route
           path="/admin"
           element={
-            isAuthenticated ? (
-              userRole === "admin" ? (
-                <AdminManagement  />
-              ) : (
-                <Navigate to="/" /> // Nếu là user thì quay lại trang sản phẩm
-              )
-            ) : (
-              <Navigate to="/login" /> // Nếu chưa đăng nhập thì chuyển tới trang login
-            )
+            <PrivateRoute role="ADMIN">
+              <AdminManagement />
+            </PrivateRoute>
           }
         />
       </Routes>

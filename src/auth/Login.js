@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Dùng useNavigate để điều hướng
 import axios from "axios";
 import requestApi from "../helpers/api";
+import { jwtDecode } from "jwt-decode";
 
 const Login = ({ handleLogin }) => {
   const [email, setEmail] = useState("");
@@ -9,36 +10,6 @@ const Login = ({ handleLogin }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-//   Xử lý khi submit form đăng nhập
-//   const onSubmit = (e) => {
-//     e.preventDefault();
-    
-//     const loginData= {username, password}
-//     console.log(loginData)
-//     // let valid = validateForm();
-    
-//         //request login api
-//         console.log("request login api")
-//         // dispatch(actions.controlLoading(true))
-//         requestApi('auth/login', 'POST', loginData).then((res) => {
-//             console.log(res)
-
-//             // localStorage.setItem('access_token', res.data.access_token);
-//             // localStorage.setItem('refresh_token', res.data.refresh_token);
-//             // dispatch(actions.controlLoading(false))
-//             navigate('/');
-//         }).catch(err => {
-//             // dispatch(actions.controlLoading(false))
-//             console.log(err)
-//             // if (typeof err.response !== "undefined") {
-//             //     if (err.response.status !== 201) {
-//             //         toast.error(err.response.data.message, { position: "top-center" })
-//             //     }
-//             // } else {
-//             //     toast.error("Server is down. Please try again!", { position: "top-center" })
-//             // }
-//         })
-//     }
 
 
         const onSubmit = async (e) => {
@@ -51,13 +22,21 @@ const Login = ({ handleLogin }) => {
                 email,
                 password,
               });
-              console.log(response.data); //2
-          
+ 
               // Nếu đăng nhập thành công, xử lý kết quả từ server
               if (response.status === 201) {
-                // Giả sử backend trả về một token hoặc thông tin người dùng
-                // handleLogin(response.data); // Hàm handleLogin sẽ lưu thông tin đăng nhập
-                navigate("/admin"); // Điều hướng tới trang dashboard hoặc trang chính
+
+               const  {access_token}  = response.data; // Giả sử backend trả về accessToken
+
+               if (!access_token || typeof access_token !== "string") {
+                console.error("Invalid or missing accessToken");
+              }
+              const decoded = jwtDecode(access_token); // Decode accessToken
+            console.log("decode===",decoded); // Xem toàn bộ payload
+            const userRole = decoded.role; // Lấy role từ payload
+
+          // handleLogin(userRole)
+          navigate(userRole === "ADMIN" ? "/admin-dashboard" : "/");
               }
             } catch (error) {
               // Xử lý lỗi nếu đăng nhập không thành công
@@ -66,10 +45,6 @@ const Login = ({ handleLogin }) => {
             }
           };
     
-
-     
-  
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -129,7 +104,7 @@ const Login = ({ handleLogin }) => {
         <div className="mt-4 text-center">
           <p className="text-sm">
             <span
-              onClick={() => navigate("/forgot-password")}
+              onClick={() => navigate("/verify-email")}
               className="text-blue-600 cursor-pointer hover:underline"
             >
               Forgot password?

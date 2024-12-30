@@ -1,19 +1,28 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState,useEffect } from "react";
+import { useNavigate,useLocation } from "react-router-dom";
+import axios from "axios";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+
+ 
+
+  const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [sendMessage, setSendMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+
+  
+ 
+ 
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Kiểm tra dữ liệu đầu vào
-    if (!email || !newPassword || !confirmPassword) {
+    if (!code || !newPassword || !confirmPassword) {
       setError("Vui lòng điền đầy đủ thông tin.");
       return;
     }
@@ -25,6 +34,18 @@ const ForgotPassword = () => {
 
     // Giả sử bạn đã gửi yêu cầu đổi mật khẩu thành công
     // Thực tế bạn sẽ gọi API để thay đổi mật khẩu ở đây
+    try {
+      const response = await axios.post("http://localhost:5000/auth/reset-password", {
+        code,
+        newPassword,
+      });
+      console.log(response.data);
+      setSendMessage("")
+    } catch (error) {
+      console.log(error);
+      
+    }
+
     setSuccessMessage("Đổi mật khẩu thành công! Bạn có thể đăng nhập lại.");
     setError("");
 
@@ -41,15 +62,16 @@ const ForgotPassword = () => {
 
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
         {successMessage && <p className="text-green-600 text-center mb-4">{successMessage}</p>}
+        {sendMessage && <p className="text-green-600 text-center mb-4">{sendMessage}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700">Email</label>
+            <label htmlFor="email" className="block text-gray-700">Code</label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md"
               required
             />
