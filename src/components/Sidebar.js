@@ -11,7 +11,7 @@ const Sidebar = () => {
     {
       name: "Admin",
       subModules: [
-        { name: "Admin Management", path: "/admin-dashboard/admin-manage" },
+        { name: "Admin Management", path: "/admin-dashboard/admin-management" },
         { name: "Report Task List", path: "/tasks" },
         { name: "Report User", path: "/users" },
       ],
@@ -26,7 +26,7 @@ const Sidebar = () => {
     },
     {
       name: "Task",
-      subModules: [{ name: "Task Management", path: "/task-management" }],
+      subModules: [{ name: "Task Management", path: "/admin-dashboard/task-management" }],
     },
   ];
 

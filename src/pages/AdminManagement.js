@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
+import Cookies from 'js-cookie';
+
+axios.defaults.withCredentials = true;
+
 
 const AdminManagement = () => {
   // Giả lập danh sách user
@@ -10,19 +14,19 @@ const AdminManagement = () => {
     email: "",
     age: "",
     gender: "",
-    role: "User",
+    // role: "User",
   });
-
+  
   const [editing, setEditing] = useState(false);
 
   // API base URL
-  const API_URL = "http://localhost:5000/users";
-
+  const API_URL = "http://localhost:5000/users/admin";
   // Lấy danh sách user từ API
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(API_URL);
+        
+        const response = await axios.get(API_URL,{withCredentials: true,} );
         console.log("===Dt====", response.data);
         
         setUsers(response.data);
@@ -42,10 +46,7 @@ const AdminManagement = () => {
 
   // Thêm user mới
   const handleAddUser = async () => {
-    // if (!formData.name || !formData.email) {
-    //   alert("Please fill in all fields.");
-    //   return;
-    // }
+
 
     try {
       const response = await axios.post(API_URL, {
@@ -53,7 +54,7 @@ const AdminManagement = () => {
         email: formData.email,
         age: formData.age,
         gender: formData.gender,
-        role: formData.role,
+        // role: formData.role,
       });
       setUsers((prev) => [...prev, response.data]);
       setFormData({  name: "", email: "", role: "User" });
@@ -74,7 +75,7 @@ const AdminManagement = () => {
       const response = await axios.put(`${API_URL}/${formData.id}`, {
         name: formData.name,
         email: formData.email,
-        role: formData.role,
+        // role: formData.role,
       });
       setUsers((prev) =>
         prev.map((user) => (user.id === response.data.id ? response.data : user))
@@ -103,7 +104,7 @@ const AdminManagement = () => {
       <h2 className="text-2xl font-bold mb-4">Admin Management</h2>
 
       {/* Form thêm/sửa user */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <h3 className="text-xl font-semibold mb-2">
           {editing ? "Edit User" : "Add User"}
         </h3>
@@ -140,15 +141,7 @@ const AdminManagement = () => {
             onChange={handleChange}
             className="border p-2 rounded w-1/3"
           />
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="border p-2 rounded w-1/3"
-          >
-            <option value="User">User</option>
-            <option value="Admin">Admin</option>
-          </select>
+          
         </div>
         <button
           onClick={editing ? handleSaveEdit : handleAddUser}
@@ -156,7 +149,7 @@ const AdminManagement = () => {
         >
           {editing ? "Save" : "Add"}
         </button>
-      </div>
+      </div> */}
 
       {/* Bảng danh sách user */}
       <table className="table-auto w-full border-collapse border border-gray-300">

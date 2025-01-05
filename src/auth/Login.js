@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Dùng useNavigate để điều hướng
+import { data, useNavigate } from "react-router-dom"; // Dùng useNavigate để điều hướng
 import axios from "axios";
 import requestApi from "../helpers/api";
 import { jwtDecode } from "jwt-decode";
@@ -10,40 +10,44 @@ const Login = ({ handleLogin }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-
+  axios.defaults.withCredentials = true; // Bật chế độ gửi cookie
 
         const onSubmit = async (e) => {
-            console.log(email, password); //1
-            e.preventDefault(); // Ngừng hành động mặc định của form (reload trang)
-          
-            try {
-              // Gửi yêu cầu POST tới backend để đăng nhập
-              const response = await axios.post("http://localhost:5000/auth/login", {
+          e.preventDefault();
+        
+          try {
+            const response = await axios.post(
+              "http://localhost:5000/auth/login",
+              {
                 email,
                 password,
-              });
- 
-              // Nếu đăng nhập thành công, xử lý kết quả từ server
-              if (response.status === 201) {
-
-               const  {access_token}  = response.data; // Giả sử backend trả về accessToken
-
-               if (!access_token || typeof access_token !== "string") {
-                console.error("Invalid or missing accessToken");
+              },
+              // {
+              //   withCredentials: true, // Đảm bảo cookie được gửi kèm
+              // }
+            );
+            console.log("===OOKOK===",response.data);
+            
+            if (response.status === 201) {
+              const { role } = response.data; // Lấy role từ response
+        
+              console.log("Đăng nhập thành công với role:", role.name);
+        
+              // Điều hướng dựa trên role
+              if (role.name === "admin") {
+                navigate("/admin-dashboard"); // Trang dashboard cho admin
+              } else if (role.name === "user") {
+                navigate("/todo-list"); // Trang chính cho user
+              } else {
+                console.error("Role không xác định:", role);
               }
-              const decoded = jwtDecode(access_token); // Decode accessToken
-            console.log("decode===",decoded); // Xem toàn bộ payload
-            const userRole = decoded.role; // Lấy role từ payload
-
-          // handleLogin(userRole)
-          navigate(userRole === "ADMIN" ? "/admin-dashboard" : "/");
-              }
-            } catch (error) {
-              // Xử lý lỗi nếu đăng nhập không thành công
-              console.error("Error during login:", error); // Log chi tiết lỗi
-              setError("Invalid username or password.");
             }
-          };
+          } catch (error) {
+            console.error("Lỗi đăng nhập:", error.response?.data?.message || error.message);
+            setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+          }
+        };
+        
     
 
   return (

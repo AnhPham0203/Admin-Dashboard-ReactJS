@@ -6,13 +6,14 @@ import {
   Navigate,
 } from "react-router-dom";
 import Sidebar from "./components/Sidebar"; // Sidebar
-import HomePage from "./pages/HomePage"; // Trang sản phẩm
+import ToDoList from "./pages/ToDoList"; // Trang sản phẩm
 import Login from "./auth/Login"; // Trang Login
 import Register from "./auth/Register"; // Trang Register
 import AdminManagement from "./pages/AdminManagement";
 import ForgotPassword from "./auth/Reset-password";
 import VerifyEmail from "./auth/VerifyEmail";
 import VerifyCode from "./auth/VerifyCode";
+import TaskManagement from "./pages/TaskManagement";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Kiểm tra đăng nhập
@@ -59,7 +60,9 @@ const App = () => {
     <Router>
       <Routes>
         {/* Route cho trang chủ (Sản phẩm) */}
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<Login />} />
+
+        <Route path="/todo-list" element={<ToDoList />} />
 
         {/* Route cho trang Login */}
         <Route path="/login" element={<Login handleLogin={handleLogin} />} />
@@ -76,7 +79,8 @@ const App = () => {
 
         <Route path="/admin-dashboard/*" element={<Sidebar />}>
           {/* Các route con hiển thị trong Content Area */}
-          <Route path="admin-manage" element={<AdminManagement />} />
+          <Route path="admin-management" element={<AdminManagement />} />
+          <Route path="task-management" element={<TaskManagement />} />
           
         </Route>
 
@@ -85,14 +89,14 @@ const App = () => {
         
 
         {/* Route cho Admin Management */}
-        <Route
+        {/* <Route
           path="/admin"
           element={
-            <PrivateRoute role="ADMIN">
+            <PrivateRoute role="admin">
               <AdminManagement />
             </PrivateRoute>
           }
-        />
+        /> */}
       </Routes>
     </Router>
   );
