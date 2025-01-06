@@ -157,7 +157,7 @@ const AdminManagement = () => {
           <tr className="bg-gray-200">
             <th className="border border-gray-300 px-4 py-2">ID</th>
             <th className="border border-gray-300 px-4 py-2">UserName</th>
-            <th className="border border-gray-300 px-4 py-2">Email</th>
+            {/* <th className="border border-gray-300 px-4 py-2">Email</th> */}
             <th className="border border-gray-300 px-4 py-2">Age</th>
             <th className="border border-gray-300 px-4 py-2">Gender</th>
             <th className="border border-gray-300 px-4 py-2">Role</th>
@@ -169,7 +169,7 @@ const AdminManagement = () => {
             <tr key={user.id}>
               <td className="border border-gray-300 px-4 py-2">{user.id}</td>
               <td className="border border-gray-300 px-4 py-2">{user.username}</td>
-              <td className="border border-gray-300 px-4 py-2">{user.email}</td>
+              {/* <td className="border border-gray-300 px-4 py-2">{user.email}</td> */}
               <td className="border border-gray-300 px-4 py-2">{user.age}</td>
               <td className="border border-gray-300 px-4 py-2">{user.gender}</td>
               <td className="border border-gray-300 px-4 py-2">{user.role}</td>

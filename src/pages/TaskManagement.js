@@ -3,6 +3,7 @@ import axios from "axios";
 
 const TaskCard = ({ task, onEdit, onDelete }) => {
   const { title, description, status, createdAt, assignedTo } = task;
+  // console.log("===task===", task.assignedTo.username);
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -33,10 +34,10 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
       </p>
       <div className="mt-4">
         <h3 className="font-medium text-gray-700">Assigned To:</h3>
-        <p className="text-gray-600">{assignedTo.username}</p>
-        <p className="text-gray-600">{assignedTo.email}</p>
+        <p className="text-gray-600">{assignedTo?.username || "xxx"}</p>
+        {/* <p className="text-gray-600">{assignedTo.email}</p> */}
       </div>
-      <div className="mt-4 flex spec-x-2">
+      <div className="mt-4 flex space-x-2">
         <button
           onClick={() => onEdit(task)}
           className="bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600"
@@ -72,85 +73,128 @@ const TaskManagement = () => {
     status: "Pending",
   });
 
-  const API_URL = "http://localhost:5000/tasks";
+  const API_URL_GET_TASKS = "http://localhost:5000/tasks";
+  const API_URL_POST_TASK = "http://localhost:5000/tasks";
+  const API_URL_UPDATE_TASK = "http://localhost:5000/tasks";
+  const API_URL_DELTE_TASK = "http://localhost:5000/tasks";
+  const API_URL_GET_USERS = "http://localhost:5000/users/role-user";
   // Mock API call
   useEffect(() => {
-    // const mockData = [
-    //   {
-    //     id: 1,
-    //     title: "Fix UI Bugs",
-    //     description: "Resolve issues with the UI components.",
-    //     status: "In Progress",
-    //     createdAt: "2025-01-02T08:00:00Z",
-    //     assignedTo: { username: "Alice", email: "alice@example.com" },
-    //   },
-    //   {
-    //     id: 2,
-    //     title: "Implement Authentication",
-    //     description: "Add login and signup functionality.",
-    //     status: "Completed",
-    //     createdAt: "2025-01-01T12:00:00Z",
-    //     assignedTo: { username: "Bob", email: "bob@example.com" },
-    //   },
-    // ];
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(API_URL, { withCredentials: true });
-        console.log("===Dt====", response.data);
+        const response = await axios.get(API_URL_GET_TASKS, {
+          withCredentials: true,
+        });
+        // console.log("===Dt====", response.data);
 
         setTasks(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
-    };
-    const mockUsers = [
-      { id: 1, username: "newUser" },
-      { id: 2, username: "anotherUser" },
-    ];
-    setUsers(mockUsers);
 
-    fetchUsers();
+      try {
+        const response = await axios.get(API_URL_GET_USERS, {
+          withCredentials: true,
+        });
+        // console.log("===user====", response.data);
+
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    // const mockUsers = [
+    //   { id: 1, username: "newUser" },
+    //   { id: 2, username: "anotherUser" },
+    // ];
+
+    fetchData();
   }, []);
 
-  const handleAddOrEditTask = () => {
+  const handleAddOrEditTask = async () => {
     if (currentTask) {
-      // Update existing task
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === currentTask.id ? { ...currentTask, ...formData } : task
-        )
-      );
-    } else {
-      // Add new task
-      const selectedUser = users.find(
-        (user) => user.id === parseInt(formData.assignedTo)
-      );
-
-      const newTask = {
-        id: Date.now(),
+      const updatedTask = {
         ...formData,
-        createdAt: new Date().toISOString(),
-        assignedTo: selectedUser
-          ? { username: selectedUser.username, email: selectedUser.email }
-          : { username: "Unknown", email: "default@example.com" }, // Default in case no user is selected
+        // id: currentTask.id, // Lấy id từ currentTask
       };
-      setTasks((prevTasks) => [...prevTasks, newTask]);
+      try {
+        console.log("===formData==", formData);
+        const response = await axios.put(
+          `${API_URL_DELTE_TASK}/${currentTask.id}`,
+          updatedTask
+        );
+        console.log("put", response.data);
+        
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === currentTask.id ? response.data : task
+          )
+        );
+       
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+ 
+    } else {
+      try {
+        console.log("===formData==", formData);
+        // debugger
+        const response = await axios.post(API_URL_POST_TASK, formData);
+        // console.log("===Dt====", response.data);
+        setTasks((prevTasks) => [...prevTasks, response.data]);
+        // setTasks(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+
+      // debugger
+      // const selectedUser = users.find(
+      //   (user) => user.id === parseInt(formData.assignedTo)
+      // );
+
+      // const newTask = {
+      //   id: Date.now(),
+      //   ...formData,
+      //   createdAt: new Date().toISOString(),
+      //   assignedTo: selectedUser
+      //     ? { username: selectedUser.username, email: selectedUser.email }
+      //     : { username: "Unknown", email: "default@example.com" }, // Default in case no user is selected
+      // };
+      // setTasks((prevTasks) => [...prevTasks, newTask]);
     }
     resetForm();
   };
 
   const handleEdit = (task) => {
+    console.log("====task===", task);
+
     setCurrentTask(task);
     setFormData({
       title: task.title,
       description: task.description,
       status: task.status,
+      assignedTo: task.assignedTo.id,
     });
+
     setShowModal(true);
   };
 
-  const handleDelete = (taskId) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+  const handleDelete = async (taskId) => {
+    try {
+      console.log("===taskId==", taskId);
+      const numericTaskId = parseInt(taskId, 10);
+      // debugger
+      const response = await axios.delete(
+        `${API_URL_DELTE_TASK}/${numericTaskId}`
+      );
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== numericTaskId)
+      );
+      // setTasks((prevTasks) => [...prevTasks, response.data]);
+      // setTasks(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
   const resetForm = () => {
@@ -159,10 +203,11 @@ const TaskManagement = () => {
     setShowModal(false);
   };
 
-   // Filter and search logic
-   useEffect(() => {
+  // Filter and search logic
+  useEffect(() => {
     let result = tasks.filter(
       (task) =>
+        task.title &&
         task.title.toLowerCase().includes(search.toLowerCase()) &&
         (filterStatus === "" || task.status === filterStatus)
     );
@@ -173,9 +218,8 @@ const TaskManagement = () => {
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Task Management</h1>
 
-
-       {/* Search and Filter */}
-       <div className="mb-6 flex gap-4">
+      {/* Search and Filter */}
+      <div className="mb-6 flex gap-4">
         <input
           type="text"
           placeholder="Search tasks..."
@@ -247,7 +291,10 @@ const TaskManagement = () => {
               className="w-full p-2 border border-gray-300 rounded-md mb-4"
               value={formData.assignedTo || ""}
               onChange={(e) =>
-                setFormData({ ...formData, assignedTo: e.target.value })
+                setFormData({
+                  ...formData,
+                  assignedTo: parseInt(e.target.value, 10),
+                })
               }
             >
               <option value="">Assign to User</option>

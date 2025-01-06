@@ -9,6 +9,8 @@ const Login = ({ handleLogin }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   axios.defaults.withCredentials = true; // Bật chế độ gửi cookie
 
@@ -22,9 +24,7 @@ const Login = ({ handleLogin }) => {
                 email,
                 password,
               },
-              // {
-              //   withCredentials: true, // Đảm bảo cookie được gửi kèm
-              // }
+           
             );
             console.log("===OOKOK===",response.data);
             
@@ -32,15 +32,18 @@ const Login = ({ handleLogin }) => {
               const { role } = response.data; // Lấy role từ response
         
               console.log("Đăng nhập thành công với role:", role.name);
-        
+              localStorage.setItem('userRole', JSON.stringify(role.name));
+              setIsAuthenticated(true);
+              setUserRole(userRole); // Lưu role vào state
+              navigate('/admin-dashboard/'); // Điều hướng sau khi đăng nhập thành công
               // Điều hướng dựa trên role
-              if (role.name === "admin") {
-                navigate("/admin-dashboard"); // Trang dashboard cho admin
-              } else if (role.name === "user") {
-                navigate("/todo-list"); // Trang chính cho user
-              } else {
-                console.error("Role không xác định:", role);
-              }
+              // if (role.name === "admin") {
+              //   navigate("/admin-dashboard"); // Trang dashboard cho admin
+              // } else if (role.name === "user") {
+              //   navigate("/todo-list"); // Trang chính cho user
+              // } else {
+              //   console.error("Role không xác định:", role);
+              // }
             }
           } catch (error) {
             console.error("Lỗi đăng nhập:", error.response?.data?.message || error.message);
