@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { useNavigate, Routes, Route, Link, Outlet } from "react-router-dom";
 import AdminManagement from "../pages/AdminManagement";
 
-// const Sidebar = () => {
+// const Sidebar = ({ userRole }) => {
+//   // debugger
+
+//   console.log("==userRole====", userRole);
+
 //   const [activeModule, setActiveModule] = useState(null);
 //   const [isAuthenticated, setIsAuthenticated] = useState(true); // Giả sử người dùng đã đăng nhập
 //   const navigate = useNavigate(); // Dùng để điều hướng
@@ -10,23 +14,31 @@ import AdminManagement from "../pages/AdminManagement";
 //   const menuItems = [
 //     {
 //       name: "Admin",
+//       roleRequired: "admin",  // Chỉ admin mới thấy mục này
 //       subModules: [
 //         { name: "Admin Management", path: "/admin-dashboard/admin-management" },
 //         { name: "Report Task List", path: "/admin-dashboard/tasks-report" },
-//         { name: "Report User", path: "/users" },
+//         { name: "Report User", path: "/admin-dashboard/users-report" },
 //       ],
 //     },
 //     {
 //       name: "Permissions",
+//       roleRequired: "admin",  // Chỉ admin mới thấy mục này
 //       subModules: [{ name: "Role", path: "/roles" }],
 //     },
 //     {
 //       name: "User",
-//       subModules: [{ name: "User Management", path: "/user-management" }],
+//       roleRequired: "user",   // Chỉ user mới thấy mục này
+//       subModules: [
+//         { name: "User Management", path: "/user-management" },
+//       ],
 //     },
 //     {
 //       name: "Task",
-//       subModules: [{ name: "Task Management", path: "/admin-dashboard/task-management" }],
+//       roleRequired: "manager",  // Chỉ manager mới thấy mục này
+//       subModules: [
+//         { name: "Task Management", path: "/admin-dashboard/task-management" },
+//       ],
 //     },
 //   ];
 
@@ -40,6 +52,9 @@ import AdminManagement from "../pages/AdminManagement";
 
 //   const handleLogout = () => {
 //     setIsAuthenticated(false); // Đăng xuất
+//     localStorage.removeItem('userRole');
+//     localStorage.removeItem('authToken');
+//     navigate('/login'); // Điều hướng đến trang login
 //   };
 
 //   if (!isAuthenticated) {
@@ -59,30 +74,33 @@ import AdminManagement from "../pages/AdminManagement";
 //         </h2>
 //         <ul className="mt-4">
 //           {menuItems.map((item, index) => (
-//             <li key={index}>
-//               {/* Module */}
-//               <div
-//                 className="cursor-pointer px-6 py-3 hover:bg-gray-700 text-xl font-semibold text-gray-300"
-//                 onClick={() => handleModuleClick(item.name)}
-//               >
-//                 {item.name}
-//               </div>
-//               {/* Sub-modules */}
-//               {activeModule === item.name && (
-//                 <ul className="ml-6">
-//                   {item.subModules.map((subItem, subIndex) => (
-//                     <li key={subIndex} className="hover:bg-gray-600">
-//                       <div
-//                         className="block px-6 py-3 text-gray-400 hover:text-white cursor-pointer"
-//                         onClick={() => handleSubModuleClick(subItem.path)}
-//                       >
-//                         {subItem.name}
-//                       </div>
-//                     </li>
-//                   ))}
-//                 </ul>
-//               )}
-//             </li>
+//             // Kiểm tra role của người dùng có quyền xem module này không
+//             item.roleRequired === userRole && (
+//               <li key={index}>
+//                 {/* Module */}
+//                 <div
+//                   className="cursor-pointer px-6 py-3 hover:bg-gray-700 text-xl font-semibold text-gray-300"
+//                   onClick={() => handleModuleClick(item.name)}
+//                 >
+//                   {item.name}
+//                 </div>
+//                 {/* Sub-modules */}
+//                 {activeModule === item.name && (
+//                   <ul className="ml-6">
+//                     {item.subModules.map((subItem, subIndex) => (
+//                       <li key={subIndex} className="hover:bg-gray-600">
+//                         <div
+//                           className="block px-6 py-3 text-gray-400 hover:text-white cursor-pointer"
+//                           onClick={() => handleSubModuleClick(subItem.path)}
+//                         >
+//                           {subItem.name}
+//                         </div>
+//                       </li>
+//                     ))}
+//                   </ul>
+//                 )}
+//               </li>
+//             )
 //           ))}
 //         </ul>
 //         {/* Logout Button */}
@@ -101,47 +119,67 @@ import AdminManagement from "../pages/AdminManagement";
 //         {/* Outlet will render the content of sub-routes */}
 //         <Outlet />
 //       </div>
-
-     
 //     </div>
 //   );
 // };
-const Sidebar = ({ userRole }) => {
-  // debugger
 
-  console.log("==userRole====", userRole);
-  
+// export default Sidebar;
+
+const Sidebar = ({ userRole }) => {
   const [activeModule, setActiveModule] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Giả sử người dùng đã đăng nhập
-  const navigate = useNavigate(); // Dùng để điều hướng
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const navigate = useNavigate();
 
   const menuItems = [
     {
       name: "Admin",
-      roleRequired: "admin",  // Chỉ admin mới thấy mục này
+      roleRequired: "admin",
       subModules: [
-        { name: "Admin Management", path: "/admin-dashboard/admin-management" },
-        { name: "Report Task List", path: "/admin-dashboard/tasks-report" },
-        { name: "Report User", path: "/admin-dashboard/users-report" },
+        {
+          name: "Admin Management",
+          path: "/admin-dashboard/admin-management",
+          rolesAllowed: ["admin", "manager"],
+        },
+        {
+          name: "Report Task List",
+          path: "/admin-dashboard/tasks-report",
+          rolesAllowed: ["admin", "manager"],
+        },
+        {
+          name: "Report User",
+          path: "/admin-dashboard/users-report",
+          rolesAllowed: ["admin", "manager"],
+        },
       ],
     },
     {
       name: "Permissions",
-      roleRequired: "admin",  // Chỉ admin mới thấy mục này
-      subModules: [{ name: "Role", path: "/roles" }],
+      roleRequired: "admin",
+      subModules: [
+        { name: "Role", path: "/admin-dashboard/roles", rolesAllowed: ["admin", "manager"] },
+        // { name: "Role", path: "/roles", rolesAllowed: ["admin", "manager"] },
+      ],
     },
     {
       name: "User",
-      roleRequired: "user",   // Chỉ user mới thấy mục này
+      roleRequired: "user",
       subModules: [
-        { name: "User Management", path: "/user-management" },
+        {
+          name: "User Management",
+          path: "/admin-dashboard/user-management",
+          rolesAllowed: ["user", "admin", "manager"],
+        },
       ],
     },
     {
       name: "Task",
-      roleRequired: "manager",  // Chỉ manager mới thấy mục này
+      roleRequired: "manager",
       subModules: [
-        { name: "Task Management", path: "/admin-dashboard/task-management" },
+        {
+          name: "Task Management",
+          path: "/admin-dashboard/task-management",
+          rolesAllowed: ["manager"],
+        },
       ],
     },
   ];
@@ -150,21 +188,26 @@ const Sidebar = ({ userRole }) => {
     setActiveModule(activeModule === moduleName ? null : moduleName);
   };
 
-  const handleSubModuleClick = (path) => {
-    navigate(path); // Điều hướng đến đường dẫn được chỉ định
+  const handleSubModuleClick = (path, rolesAllowed) => {
+    // Chỉ điều hướng nếu userRole nằm trong rolesAllowed
+    if (rolesAllowed.includes(userRole)) {
+      navigate(path);
+    }
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false); // Đăng xuất
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('authToken');
-    navigate('/login'); // Điều hướng đến trang login
+    setIsAuthenticated(false);
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("authToken");
+    navigate("/login");
   };
 
   if (!isAuthenticated) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-gray-100">
-        <h2 className="text-2xl text-gray-600">Please log in to access the dashboard.</h2>
+        <h2 className="text-2xl text-gray-600">
+          Please log in to access the dashboard.
+        </h2>
       </div>
     );
   }
@@ -178,33 +221,39 @@ const Sidebar = ({ userRole }) => {
         </h2>
         <ul className="mt-4">
           {menuItems.map((item, index) => (
-            // Kiểm tra role của người dùng có quyền xem module này không
-            item.roleRequired === userRole && (
-              <li key={index}>
-                {/* Module */}
-                <div
-                  className="cursor-pointer px-6 py-3 hover:bg-gray-700 text-xl font-semibold text-gray-300"
-                  onClick={() => handleModuleClick(item.name)}
-                >
-                  {item.name}
-                </div>
-                {/* Sub-modules */}
-                {activeModule === item.name && (
-                  <ul className="ml-6">
-                    {item.subModules.map((subItem, subIndex) => (
-                      <li key={subIndex} className="hover:bg-gray-600">
-                        <div
-                          className="block px-6 py-3 text-gray-400 hover:text-white cursor-pointer"
-                          onClick={() => handleSubModuleClick(subItem.path)}
-                        >
-                          {subItem.name}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            )
+            <li key={index}>
+              {/* Module */}
+              <div
+                className="cursor-pointer px-6 py-3 hover:bg-gray-700 text-xl font-semibold text-gray-300"
+                onClick={() => handleModuleClick(item.name)}
+              >
+                {item.name}
+              </div>
+              {/* Sub-modules */}
+              {activeModule === item.name && (
+                <ul className="ml-6">
+                  {item.subModules.map((subItem, subIndex) => (
+                    <li key={subIndex} className="hover:bg-gray-600">
+                      <div
+                        className={`block px-6 py-3 text-gray-400 hover:text-white cursor-pointer ${
+                          !subItem.rolesAllowed.includes(userRole)
+                            ? "cursor-not-allowed opacity-50"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleSubModuleClick(
+                            subItem.path,
+                            subItem.rolesAllowed
+                          )
+                        }
+                      >
+                        {subItem.name}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
           ))}
         </ul>
         {/* Logout Button */}
@@ -220,14 +269,9 @@ const Sidebar = ({ userRole }) => {
       {/* Content Area */}
       <div className="flex-1 p-6 bg-gray-100">
         <h2 className="text-2xl font-bold mb-4">Welcome to Admin Dashboard</h2>
-        {/* Outlet will render the content of sub-routes */}
         <Outlet />
       </div>
     </div>
   );
 };
-
 export default Sidebar;
-
-
-// export default Sidebar;

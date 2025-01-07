@@ -77,7 +77,7 @@
 
 //         {/* Route cho trang Forgot Password */}
 //         <Route path="/reset-password" element={<ForgotPassword />} />
-        
+
 //         <Route
 //           path="/admin-dashboard/*"
 //           element={<Sidebar userRole={userRole} />}
@@ -107,7 +107,6 @@
 
 // export default App;
 
-
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -126,6 +125,8 @@ import VerifyCode from "./auth/VerifyCode";
 import TaskManagement from "./pages/TaskManagement";
 import ReportTaskList from "./pages/ReportTaskList";
 import ReportUser from "./pages/ReportUser";
+import RolePage from "./pages/Role";
+import UserManagement from "./pages/UserManagement";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Kiểm tra đăng nhập
@@ -175,17 +176,16 @@ const App = () => {
         {/* Route cho Admin Dashboard */}
         <Route
           path="/admin-dashboard/*"
-          element={
-              <Sidebar userRole={userRole} />
-          }
+          element={<Sidebar userRole={userRole} />}
         >
           {/* Các route con hiển thị trong Content Area */}
           <Route path="admin-management" element={<AdminManagement />} />
           <Route path="tasks-report" element={<ReportTaskList />} />
           <Route path="users-report" element={<ReportUser />} />
+          <Route path="roles" element={<RolePage />} />
+          <Route path="user-management" element={<UserManagement />} />
           <Route path="task-management" element={<TaskManagement />} />
         </Route>
-
       </Routes>
     </Router>
   );

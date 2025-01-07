@@ -2,17 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const ReportTaskList = () => {
-  // const [tasks, setTasks] = useState([
-  //   {
-  //     id: 1,
-  //     title: "Fix UI Bugs",
-  //     description: "Resolve issues with the UI components",
-  //     status: "Pending",
-  //     createdAt: "2025-01-06T02:06:45.732Z",
-  //     updatedAt: "2025-01-12T02:06:45.732Z",
-  //   },
-  //   // Bạn có thể thêm nhiều task hơn vào đây
-  // ]);
+  
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
@@ -68,7 +58,7 @@ const ReportTaskList = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-semibold mb-4">Report Task List</h1>
+      <h1 className="text-2xl font-bold mb-4">Report Task List</h1>
 
       {/* Bộ lọc */}
       <div className="flex space-x-4 mb-6">

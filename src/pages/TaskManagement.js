@@ -40,7 +40,7 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
       <div className="mt-4 flex space-x-2">
         <button
           onClick={() => onEdit(task)}
-          className="bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600"
+          className="bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600"
         >
           Edit
         </button>
@@ -147,20 +147,7 @@ const TaskManagement = () => {
         console.error("Error fetching users:", error);
       }
 
-      // debugger
-      // const selectedUser = users.find(
-      //   (user) => user.id === parseInt(formData.assignedTo)
-      // );
-
-      // const newTask = {
-      //   id: Date.now(),
-      //   ...formData,
-      //   createdAt: new Date().toISOString(),
-      //   assignedTo: selectedUser
-      //     ? { username: selectedUser.username, email: selectedUser.email }
-      //     : { username: "Unknown", email: "default@example.com" }, // Default in case no user is selected
-      // };
-      // setTasks((prevTasks) => [...prevTasks, newTask]);
+      
     }
     resetForm();
   };
@@ -190,8 +177,6 @@ const TaskManagement = () => {
       setTasks((prevTasks) =>
         prevTasks.filter((task) => task.id !== numericTaskId)
       );
-      // setTasks((prevTasks) => [...prevTasks, response.data]);
-      // setTasks(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -216,7 +201,7 @@ const TaskManagement = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Task Management</h1>
+      <h1 className="text-2xl font-bold mb-4">Task Management</h1>
 
       {/* Search and Filter */}
       <div className="mb-6 flex gap-4">

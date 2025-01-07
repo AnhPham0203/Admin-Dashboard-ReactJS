@@ -30,7 +30,7 @@ const ReportUser = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-semibold mb-4">User Report</h1>
+      <h1 className="text-2xl font-bold mb-4">User Report</h1>
       <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
         <thead>
           <tr>

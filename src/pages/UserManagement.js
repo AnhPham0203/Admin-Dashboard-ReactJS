@@ -3,7 +3,7 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
-const AdminManagement = () => {
+const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -14,10 +14,10 @@ const AdminManagement = () => {
     gender: "",
   });
 
-  const API_URL = "http://localhost:5000/users/admin";
-  const API_URL_ADD_ADMIN = "http://localhost:5000/users/create-admin";
+  const API_URL = "http://localhost:5000/users/role-user";
+  const API_URL_ADD_USER = "http://localhost:5000/users";
   const API_URL_DELETE_ADMIN = "http://localhost:5000/users";
-  const API_URL_UPDATE_USER = "http://localhost:5000/users";
+  const API_URL_UPDATE_ADMIN = "http://localhost:5000/users";
 
   // Fetch users from API
   useEffect(() => {
@@ -75,7 +75,7 @@ const AdminManagement = () => {
       if (editing) {
         // Edit user
         const response = await axios.put(
-          `${API_URL_UPDATE_USER}/${formData.id}`,
+          `${API_URL_UPDATE_ADMIN}/${formData.id}`,
           formData
         );
         setUsers((prev) =>
@@ -85,7 +85,7 @@ const AdminManagement = () => {
         );
       } else {
         // Add user
-        const response = await axios.post(API_URL_ADD_ADMIN, formData);
+        const response = await axios.post(API_URL_ADD_USER, formData);
         setUsers((prev) => [...prev, response.data]);
       }
       closeModal();
@@ -108,14 +108,14 @@ const AdminManagement = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Admin Management</h2>
+      <h2 className="text-2xl font-bold mb-4">User Management</h2>
 
       {/* Add Admin Button */}
       <button
         onClick={() => openModal()}
         className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600"
       >
-        Add Admin
+        Add User
       </button>
 
       {/* Users Table */}
@@ -162,7 +162,7 @@ const AdminManagement = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white rounded-lg p-6 w-1/3">
             <h3 className="text-xl font-semibold mb-4">
-              {editing ? "Edit Admin" : "Add Admin"}
+              {editing ? "Edit User" : "Add User"}
             </h3>
 
             <div className="flex flex-col gap-4">
@@ -267,4 +267,4 @@ const AdminManagement = () => {
   );
 };
 
-export default AdminManagement;
+export default UserManagement;
