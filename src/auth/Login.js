@@ -14,44 +14,33 @@ const Login = ({ handleLogin }) => {
 
   axios.defaults.withCredentials = true; // Bật chế độ gửi cookie
 
-        const onSubmit = async (e) => {
-          e.preventDefault();
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:5000/auth/login", {
+        email,
+        password,
+      });
+      console.log("===OOKOK===", response.data);
+
+      if (response.status === 201) {
+        const { role } = response.data; // Lấy role từ response
         
-          try {
-            const response = await axios.post(
-              "http://localhost:5000/auth/login",
-              {
-                email,
-                password,
-              },
-           
-            );
-            console.log("===OOKOK===",response.data);
-            
-            if (response.status === 201) {
-              const { role } = response.data; // Lấy role từ response
-        
-              console.log("Đăng nhập thành công với role:", role.name);
-              localStorage.setItem('userRole', JSON.stringify(role.name));
-              setIsAuthenticated(true);
-              setUserRole(userRole); // Lưu role vào state
-              navigate('/admin-dashboard/'); // Điều hướng sau khi đăng nhập thành công
-              // Điều hướng dựa trên role
-              // if (role.name === "admin") {
-              //   navigate("/admin-dashboard"); // Trang dashboard cho admin
-              // } else if (role.name === "user") {
-              //   navigate("/todo-list"); // Trang chính cho user
-              // } else {
-              //   console.error("Role không xác định:", role);
-              // }
-            }
-          } catch (error) {
-            console.error("Lỗi đăng nhập:", error.response?.data?.message || error.message);
-            setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-          }
-        };
-        
-    
+        console.log("Đăng nhập thành công với role:", role.name);
+        localStorage.setItem("userRole", JSON.stringify(role.name));
+        setIsAuthenticated(true);
+        setUserRole(userRole); // Lưu role vào state
+        navigate("/admin-dashboard/"); // Điều hướng sau khi đăng nhập thành công
+      }
+    } catch (error) {
+      console.error(
+        "Lỗi đăng nhập:",
+        error.response?.data?.message || error.message
+      );
+      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

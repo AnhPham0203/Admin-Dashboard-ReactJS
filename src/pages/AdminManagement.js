@@ -13,6 +13,7 @@ const AdminManagement = () => {
     age: "",
     gender: "",
   });
+   
 
   const API_URL = "http://localhost:5000/users/admin";
   const API_URL_ADD_ADMIN = "http://localhost:5000/users/create-admin";

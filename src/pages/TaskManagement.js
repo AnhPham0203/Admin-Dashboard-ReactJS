@@ -4,6 +4,17 @@ import axios from "axios";
 const TaskCard = ({ task, onEdit, onDelete }) => {
   const { title, description, status, createdAt, assignedTo } = task;
   // console.log("===task===", task.assignedTo.username);
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const storedRole = JSON.parse(localStorage.getItem("userRole"));
+    console.log("Stored Role:", storedRole);
+    if (storedRole) {
+      // setIsAuthenticated(true);
+      setUserRole(storedRole);
+    }
+    // setIsLoading(false); // Cập nhật loading state
+  }, []);
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -34,26 +45,32 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
       </p>
       <div className="mt-4">
         <h3 className="font-medium text-gray-700">Assigned To:</h3>
-        <p className="text-gray-600">{assignedTo?.username || "xxx"}</p>
+        <p className="text-gray-600">{assignedTo?.username || ""}</p>
         {/* <p className="text-gray-600">{assignedTo.email}</p> */}
       </div>
       <div className="mt-4 flex space-x-2">
-        <button
-          onClick={() => onEdit(task)}
-          className="bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600"
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => {
-            if (window.confirm("Are you sure you want to delete this task?")) {
-              onDelete(task.id);
-            }
-          }}
-          className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600"
-        >
-          Delete
-        </button>
+        {userRole !== "user" && userRole !== "admin" && (
+          <div className="flex space-x-2">
+            <button
+              onClick={() => onEdit(task)}
+              className="bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                if (
+                  window.confirm("Are you sure you want to delete this task?")
+                ) {
+                  onDelete(task.id);
+                }
+              }}
+              className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600"
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -72,6 +89,18 @@ const TaskManagement = () => {
     description: "",
     status: "Pending",
   });
+
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const storedRole = JSON.parse(localStorage.getItem("userRole"));
+    console.log("Stored Role:", storedRole);
+    if (storedRole) {
+      // setIsAuthenticated(true);
+      setUserRole(storedRole);
+    }
+    // setIsLoading(false); // Cập nhật loading state
+  }, []);
 
   const API_URL_GET_TASKS = "http://localhost:5000/tasks";
   const API_URL_POST_TASK = "http://localhost:5000/tasks";
@@ -124,17 +153,15 @@ const TaskManagement = () => {
           updatedTask
         );
         console.log("put", response.data);
-        
+
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.id === currentTask.id ? response.data : task
           )
         );
-       
       } catch (error) {
         console.error("Error fetching users:", error);
       }
- 
     } else {
       try {
         console.log("===formData==", formData);
@@ -146,8 +173,6 @@ const TaskManagement = () => {
       } catch (error) {
         console.error("Error fetching users:", error);
       }
-
-      
     }
     resetForm();
   };
@@ -225,15 +250,17 @@ const TaskManagement = () => {
       </div>
 
       {/* Nút mở modal */}
-      <button
-        onClick={() => {
-          resetForm();
-          setShowModal(true);
-        }}
-        className="mb-6 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-      >
-        Add Task
-      </button>
+      {userRole !== "user" && userRole !== "admin" && (
+        <button
+          onClick={() => {
+            resetForm();
+            setShowModal(true);
+          }}
+          className="mb-6 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+        >
+          Add Task
+        </button>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

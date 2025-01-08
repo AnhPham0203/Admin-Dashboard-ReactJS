@@ -38,8 +38,13 @@ const RolePage = () => {
     setCurrentRole(null);
   };
 
-  const handleDeleteRole = (id) => {
-    setRoles(roles.filter((role) => role.id !== id));
+  const handleDeleteRole = async (id) => {
+    try {
+      const response = await axios.delete(`${API_URL}/${id}`);
+      setRoles(roles.filter((role) => role.id !== id));
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
   const handleEditClick = (role) => {
