@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 const Profile = () => {
   // Dữ liệu người dùng ban đầu
@@ -15,7 +15,7 @@ const Profile = () => {
       try {
         const response = await axios.get("http://localhost:5000/users/3");
         console.log(response.data);
-        
+
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);

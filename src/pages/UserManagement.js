@@ -125,7 +125,7 @@ const UserManagement = () => {
             <th className="border border-gray-300 px-4 py-2">ID</th>
             <th className="border border-gray-300 px-4 py-2">Username</th>
             <th className="border border-gray-300 px-4 py-2">Email</th>
-            <th className="border border-gray-300 px-4 py-2">Role</th>
+            {/* <th className="border border-gray-300 px-4 py-2">Role</th> */}
             <th className="border border-gray-300 px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -137,7 +137,7 @@ const UserManagement = () => {
                 {user.username}
               </td>
               <td className="border border-gray-300 px-4 py-2">{user.email}</td>
-              <td className="border border-gray-300 px-4 py-2">{user.role}</td>
+              {/* <td className="border border-gray-300 px-4 py-2">{user.role}</td> */}
               <td className="border border-gray-300 px-4 py-2">
                 <button
                   onClick={() => openModal(user)}

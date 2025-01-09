@@ -8,16 +8,25 @@ const Sidebar = () => {
   const [activeModule, setActiveModule] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [userRole, setUserRole] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false); // State để hiển thị modal
+  const [isEditing, setIsEditing] = useState(false);
+  const [userDetails, setUserDetails] = useState({
+    username: "",
+    email: "",
+    role: "",
+  });
   const navigate = useNavigate();
 
   // const { userRole } = useAuth()
 
   useEffect(() => {
     const storedRole = JSON.parse(localStorage.getItem("userRole"));
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     console.log("Stored Role:", storedRole);
     if (storedRole) {
       setIsAuthenticated(true);
       setUserRole(storedRole);
+      setUserDetails(storedUser);
     }
     // setIsLoading(false); // Cập nhật loading state
   }, []);
@@ -51,7 +60,7 @@ const Sidebar = () => {
         {
           name: "Role",
           path: "/admin-dashboard/roles",
-          rolesAllowed: ["admin", "manager"],
+          rolesAllowed: ["manager"],
         },
         // { name: "Role", path: "/roles", rolesAllowed: ["admin", "manager"] },
       ],
@@ -63,7 +72,7 @@ const Sidebar = () => {
         {
           name: "User Management",
           path: "/admin-dashboard/user-management",
-          rolesAllowed: ["user", "admin", "manager"],
+          rolesAllowed: ["admin", "manager"],
         },
       ],
     },
@@ -95,6 +104,24 @@ const Sidebar = () => {
     setActiveModule(activeModule === moduleName ? null : moduleName);
   };
 
+  const handleProfileClick = () => {
+    setShowProfileModal(true); // Mở modal
+  };
+
+  const handleModalClose = () => {
+    setShowProfileModal(false); // Đóng modal
+  };
+  const handleEditClick = () => {
+    setIsEditing(false); // Bật chế độ chỉnh sửa
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    // Logic chỉnh sửa thông tin người dùng
+    console.log("Updated user details:", userDetails);
+    setShowProfileModal(false);
+  };
+
   const handleSubModuleClick = (path, rolesAllowed) => {
     // Chỉ điều hướng nếu userRole nằm trong rolesAllowed
     if (rolesAllowed.includes(userRole)) {
@@ -113,6 +140,7 @@ const Sidebar = () => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem("userRole");
+    localStorage.removeItem("user");
     localStorage.removeItem("authToken");
     navigate("/login");
   };
@@ -131,6 +159,20 @@ const Sidebar = () => {
     <div className="flex">
       {/* Sidebar */}
       <div className="w-64 h-screen bg-gray-800 text-white">
+        {/* Profile Section */}
+        <div
+          className="border-b border-gray-700 px-6 py-4 flex items-center cursor-pointer"
+          onClick={handleProfileClick}
+        >
+          <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl font-bold">
+            {userDetails.username?.charAt(0).toUpperCase()}
+          </div>
+          <div className="ml-4">
+            <h3 className="text-lg font-semibold">{userDetails.username}</h3>
+            <p className="text-sm text-gray-400">Role: {userRole || "N/A"}</p>
+          </div>
+        </div>
+
         <h2 className="text-center text-2xl font-bold py-6 border-b border-gray-700">
           <Link to="/admin-dashboard/">Admin Dashboard</Link>
         </h2>
@@ -187,6 +229,104 @@ const Sidebar = () => {
         {/* <Dashboard></Dashboard> */}
         <Outlet />
       </div>
+
+      {/* Profile Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-md shadow-md w-96">
+            <h2 className="text-xl font-bold mb-4">User Profile</h2>
+            {isEditing ? (
+              <form onSubmit={handleEditSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium">Username</label>
+                  <input
+                    type="text"
+                    value={userDetails.username}
+                    onChange={(e) =>
+                      setUserDetails({
+                        ...userDetails,
+                        username: e.target.value,
+                      })
+                    }
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium">Email</label>
+                  <input
+                    type="email"
+                    value={userDetails.email}
+                    onChange={(e) =>
+                      setUserDetails({ ...userDetails, email: e.target.value })
+                    }
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium">Role</label>
+                  <input
+                    type="text"
+                    value={userDetails.role.name}
+                    readOnly
+                    className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleModalClose}
+                    className="mr-2 px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div>
+                {/* <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl font-bold">
+                  {userDetails.username?.charAt(0).toUpperCase()}
+                </div> */}
+
+                <div className="mb-2">
+                  {/* <strong>Avatar:</strong> */}
+                  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl font-bold">
+                    {userDetails.username?.charAt(0).toUpperCase()}
+                  </div>
+                </div>
+                <p className="mb-2">
+                  <strong>Username:</strong> {userDetails.username}
+                </p>
+                <p className="mb-2">
+                  <strong>Email:</strong> {userDetails.email}
+                </p>
+                <p className="mb-4">
+                  <strong>Role:</strong> {userDetails.role.name}
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleModalClose}
+                    className="mr-2 px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={handleEditClick}
+                    className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded"
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

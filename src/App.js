@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -32,9 +30,10 @@ const App = () => {
   // Kiểm tra trạng thái đăng nhập từ localStorage khi load lại trang
   useEffect(() => {
     const storedRole = JSON.parse(localStorage.getItem("userRole"));
+    const storedAuthen = JSON.parse(localStorage.getItem("isAuthenticated"));
     console.log("Stored Role:", storedRole);
     if (storedRole) {
-      setIsAuthenticated(true);
+      setIsAuthenticated(storedAuthen);
       setUserRole(storedRole);
     }
     setIsLoading(false); // Cập nhật loading state
@@ -43,59 +42,64 @@ const App = () => {
   // if (isLoading) {
   //   return <div>Loading...</div>; // Hoặc một spinner
   // }
-
+  // debugger;
   // Component để bảo vệ các route
-  // const PrivateRoute = ({ children, role }) => {
+  // const PrivateRoute = ({ children }) => {
   //   if (!isAuthenticated) {
   //     return <Navigate to="/login" />;
-  //   }
-  //   if (role && role !== userRole) {
-  //     return <Navigate to="/" />; // Nếu không phải role admin, chuyển hướng về trang chủ
   //   }
   //   return children;
   // };
 
   return (
-    // <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Route cho trang chủ (Sản phẩm) */}
-          <Route path="/" element={<Login />} />
+    <Router>
+      <Routes>
+        {/* Route cho trang chủ (Sản phẩm) */}
+        {/* <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Login />
+            </PrivateRoute>
+          }
+        /> */}
 
-          <Route path="/todo-list" element={<ToDoList />} />
+        <Route path="/todo-list" element={<ToDoList />} />
 
-          {/* Route cho trang Login */}
-          <Route path="/login" element={<Login />} />
+        {/* Route cho trang Login */}
+        <Route path="/login" element={<Login />} />
 
-          {/* Route cho trang Register */}
-          <Route path="/register" element={<Register />} />
+        {/* Route cho trang Register */}
+        <Route path="/register" element={<Register />} />
 
-          <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 
-          <Route path="/verify-code" element={<VerifyCode />} />
+        <Route path="/verify-code" element={<VerifyCode />} />
 
-          {/* Route cho trang Forgot Password */}
-          <Route path="/reset-password" element={<ForgotPassword />} />
-
-          {/* Route cho Admin Dashboard */}
-          <Route
-            path="/admin-dashboard/*"
-            element={<Sidebar userRole={userRole} />}
-          >
-            {/* Các route con hiển thị trong Content Area */}
-            <Route path="" element={<Dashboard />} />
-            <Route path="admin-management" element={<AdminManagement />} />
-            <Route path="tasks-report" element={<ReportTaskList />} />
-            <Route path="users-report" element={<ReportUser />} />
-            <Route path="roles" element={<RolePage />} />
-            <Route path="user-management" element={<UserManagement />} />
-            <Route path="task-management" element={<TaskManagement />} />
-            <Route path="todo-list" element={<ToDoList />} />
-            <Route path="profile" element={<ProfileUser />} />
-          </Route>
-        </Routes>
-      </Router>
-    // </AuthProvider>
+        {/* Route cho trang Forgot Password */}
+        <Route path="/reset-password" element={<ForgotPassword />} />
+        {/* Route cho Admin Dashboard */}
+        <Route
+          path="/admin-dashboard/*"
+          element={
+            // <PrivateRoute>
+              <Sidebar userRole={userRole} />
+            // </PrivateRoute>
+          }
+        >
+          {/* Các route con hiển thị trong Content Area */}
+          <Route path="" element={<Dashboard />} />
+          <Route path="admin-management" element={<AdminManagement />} />
+          <Route path="tasks-report" element={<ReportTaskList />} />
+          <Route path="users-report" element={<ReportUser />} />
+          <Route path="roles" element={<RolePage />} />
+          <Route path="user-management" element={<UserManagement />} />
+          <Route path="task-management" element={<TaskManagement />} />
+          <Route path="todo-list" element={<ToDoList />} />
+          <Route path="profile" element={<ProfileUser />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 };
 

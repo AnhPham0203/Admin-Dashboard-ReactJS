@@ -25,10 +25,12 @@ const Login = ({ handleLogin }) => {
       console.log("===OOKOK===", response.data);
 
       if (response.status === 201) {
-        const { role } = response.data; // Lấy role từ response
-        
-        console.log("Đăng nhập thành công với role:", role.name);
-        localStorage.setItem("userRole", JSON.stringify(role.name));
+        const { user } = response.data; // Lấy role từ response
+        // debugger
+        // console.log("Đăng nhập thành công với role:", user.username);
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("userRole", JSON.stringify(user.role.name));
+        localStorage.setItem("isAuthenticated", "true");
         setIsAuthenticated(true);
         setUserRole(userRole); // Lưu role vào state
         navigate("/admin-dashboard/"); // Điều hướng sau khi đăng nhập thành công

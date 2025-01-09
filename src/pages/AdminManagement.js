@@ -13,7 +13,7 @@ const AdminManagement = () => {
     age: "",
     gender: "",
   });
-   
+  const [userRole, setUserRole] = useState(null);
 
   const API_URL = "http://localhost:5000/users/admin";
   const API_URL_ADD_ADMIN = "http://localhost:5000/users/create-admin";
@@ -23,9 +23,16 @@ const AdminManagement = () => {
   // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
+      const storedRole = JSON.parse(localStorage.getItem("userRole"));
+      console.log("Stored Role:", storedRole);
+      if (storedRole) {
+        // setIsAuthenticated(true);
+        setUserRole(storedRole);
+      }
       try {
         const response = await axios.get(API_URL);
         setUsers(response.data);
+        console.log("===admin===", response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -87,6 +94,9 @@ const AdminManagement = () => {
       } else {
         // Add user
         const response = await axios.post(API_URL_ADD_ADMIN, formData);
+        debugger;
+        console.log("==ADMIN===", response.data);
+
         setUsers((prev) => [...prev, response.data]);
       }
       closeModal();
@@ -112,12 +122,14 @@ const AdminManagement = () => {
       <h2 className="text-2xl font-bold mb-4">Admin Management</h2>
 
       {/* Add Admin Button */}
-      <button
-        onClick={() => openModal()}
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600"
-      >
-        Add Admin
-      </button>
+      {userRole === "manager" && (
+        <button
+          onClick={() => openModal()}
+          className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600"
+        >
+          Add Admin
+        </button>
+      )}
 
       {/* Users Table */}
       <table className="table-auto w-full border-collapse border border-gray-300">
@@ -126,7 +138,7 @@ const AdminManagement = () => {
             <th className="border border-gray-300 px-4 py-2">ID</th>
             <th className="border border-gray-300 px-4 py-2">Username</th>
             <th className="border border-gray-300 px-4 py-2">Email</th>
-            <th className="border border-gray-300 px-4 py-2">Role</th>
+            {/* <th className="border border-gray-300 px-4 py-2">Role</th> */}
             <th className="border border-gray-300 px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -138,20 +150,24 @@ const AdminManagement = () => {
                 {user.username}
               </td>
               <td className="border border-gray-300 px-4 py-2">{user.email}</td>
-              <td className="border border-gray-300 px-4 py-2">{user.role}</td>
+              {/* <td className="border border-gray-300 px-4 py-2">{user.role}</td> */}
               <td className="border border-gray-300 px-4 py-2">
-                <button
-                  onClick={() => openModal(user)}
-                  className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteUser(user.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                >
-                  Delete
-                </button>
+                {userRole === "manager" && (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => openModal(user)}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(user.id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </td>
             </tr>
           ))}
