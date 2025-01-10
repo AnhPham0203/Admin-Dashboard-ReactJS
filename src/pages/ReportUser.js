@@ -100,7 +100,7 @@ const ReportUser = () => {
                 <span
                   className={`px-2 py-1 rounded-full text-white ${
                     report.status === "pending"
-                      ? "bg-yellow-500"
+                      ? "bg-red-500"
                       : "bg-green-500"
                   }`}
                 >

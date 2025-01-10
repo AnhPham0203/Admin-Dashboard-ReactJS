@@ -49,14 +49,14 @@ const TaskCard = ({ task, onEdit, onDelete }) => {
         {/* <p className="text-gray-600">{assignedTo.email}</p> */}
       </div>
       <div className="mt-4 flex space-x-2">
+        <button
+          onClick={() => onEdit(task)}
+          className="bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600"
+        >
+          Edit
+        </button>
         {userRole !== "user" && userRole !== "admin" && (
           <div className="flex space-x-2">
-            <button
-              onClick={() => onEdit(task)}
-              className="bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600"
-            >
-              Edit
-            </button>
             <button
               onClick={() => {
                 if (

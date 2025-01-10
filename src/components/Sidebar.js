@@ -22,7 +22,7 @@ const Sidebar = () => {
   useEffect(() => {
     const storedRole = JSON.parse(localStorage.getItem("userRole"));
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    console.log("Stored Role:", storedRole);
+    console.log("Stored Role:=== sidebar", storedUser);
     if (storedRole) {
       setIsAuthenticated(true);
       setUserRole(storedRole);
@@ -266,7 +266,7 @@ const Sidebar = () => {
                   <label className="block text-sm font-medium">Role</label>
                   <input
                     type="text"
-                    value={userDetails.role.name}
+                    value={userDetails.role}
                     readOnly
                     className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
                   />
@@ -306,7 +306,7 @@ const Sidebar = () => {
                   <strong>Email:</strong> {userDetails.email}
                 </p>
                 <p className="mb-4">
-                  <strong>Role:</strong> {userDetails.role.name}
+                  <strong>Role:</strong> {userDetails.role}
                 </p>
                 <div className="flex justify-end">
                   <button

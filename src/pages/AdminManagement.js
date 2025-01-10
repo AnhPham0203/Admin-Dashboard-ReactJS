@@ -30,7 +30,7 @@ const AdminManagement = () => {
         setUserRole(storedRole);
       }
       try {
-        const response = await axios.get(API_URL);
+        const response = await axios.get(API_URL, { withCredentials: true });
         setUsers(response.data);
         console.log("===admin===", response.data);
       } catch (error) {
@@ -94,7 +94,7 @@ const AdminManagement = () => {
       } else {
         // Add user
         const response = await axios.post(API_URL_ADD_ADMIN, formData);
-        debugger;
+        // debugger;
         console.log("==ADMIN===", response.data);
 
         setUsers((prev) => [...prev, response.data]);

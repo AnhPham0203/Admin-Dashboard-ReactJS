@@ -22,14 +22,14 @@ const Login = ({ handleLogin }) => {
         email,
         password,
       });
-      console.log("===OOKOK===", response.data);
 
       if (response.status === 201) {
-        const { user } = response.data; // Lấy role từ response
+        const user = response.data;
+        console.log("===OOKOK===", user);
         // debugger
         // console.log("Đăng nhập thành công với role:", user.username);
         localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("userRole", JSON.stringify(user.role.name));
+        localStorage.setItem("userRole", JSON.stringify(user.role));
         localStorage.setItem("isAuthenticated", "true");
         setIsAuthenticated(true);
         setUserRole(userRole); // Lưu role vào state
