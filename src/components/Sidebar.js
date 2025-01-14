@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate, Routes, Route, Link, Outlet } from "react-router-dom";
 import AdminManagement from "../pages/AdminManagement";
 import Dashboard from "../pages/Dashboard";
 import { useAuth } from "../authProvider/AuthProvider";
+import axios from "axios";
 
 const Sidebar = () => {
   const [activeModule, setActiveModule] = useState(null);
@@ -14,6 +15,7 @@ const Sidebar = () => {
     username: "",
     email: "",
     role: "",
+    avatar: "",
   });
   const navigate = useNavigate();
 
@@ -30,6 +32,9 @@ const Sidebar = () => {
     }
     // setIsLoading(false); // Cập nhật loading state
   }, []);
+
+  const fileInputRef = useRef(null);
+  const [avatar, setAvatar] = useState(null);
 
   const menuItems = [
     {
@@ -141,10 +146,60 @@ const Sidebar = () => {
     setIsAuthenticated(false);
     localStorage.removeItem("userRole");
     localStorage.removeItem("user");
-    localStorage.removeItem("authToken");
+    // localStorage.removeItem("authToken");
     navigate("/login");
   };
 
+  const handleAvatarUpload = async (file) => {
+    // debugger;
+    console.log(file);
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+    formData.append("userId", userDetails.id);
+    //"http://localhost:5000/upload/avatar"
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/upload/avatar",
+        formData
+      );
+
+      console.log("=====uploadAvatar==", response);
+      // debugger;
+      if (response.status === 201) {
+        const newAvatarPath = response.data;
+
+        setUserDetails((prevDetails) => {
+          const updatedDetails = { ...prevDetails, avatar: newAvatarPath };
+          // Cập nhật thông tin avatar mới vào localStorage
+          localStorage.setItem("user", JSON.stringify(updatedDetails));
+          return updatedDetails;
+        });
+
+        console.log("Avatar uploaded successfully!");
+      } else {
+        console.error("Failed to upload avatar.");
+      }
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+    }
+    setShowProfileModal(false);
+  };
+
+  const handleAvatarClick = (event) => {
+    event.stopPropagation(); // Ngăn chặn sự kiện lan truyền
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    console.log("handleFileChange==", file);
+
+    if (file) {
+      setAvatar(URL.createObjectURL(file)); // Hiển thị avatar tạm thời
+      handleAvatarUpload(file); // Gửi file lên server
+    }
+  };
   if (!isAuthenticated) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-gray-100">
@@ -165,7 +220,15 @@ const Sidebar = () => {
           onClick={handleProfileClick}
         >
           <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl font-bold">
-            {userDetails.username?.charAt(0).toUpperCase()}
+            {userDetails.avatar ? (
+              <img
+                src={`http://localhost:5000${userDetails.avatar}`}
+                alt="User Avatar"
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              userDetails.username?.charAt(0).toUpperCase()
+            )}
           </div>
           <div className="ml-4">
             <h3 className="text-lg font-semibold">{userDetails.username}</h3>
@@ -257,7 +320,10 @@ const Sidebar = () => {
                     type="email"
                     value={userDetails.email}
                     onChange={(e) =>
-                      setUserDetails({ ...userDetails, email: e.target.value })
+                      setUserDetails({
+                        ...userDetails,
+                        email: e.target.value,
+                      })
                     }
                     className="w-full p-2 border border-gray-300 rounded-md"
                   />
@@ -294,10 +360,28 @@ const Sidebar = () => {
                 </div> */}
 
                 <div className="mb-2">
-                  {/* <strong>Avatar:</strong> */}
-                  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl font-bold">
+                  {/* <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl font-bold">
                     {userDetails.username?.charAt(0).toUpperCase()}
+                  </div> */}
+                  <div
+                    className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl font-bold cursor-pointer"
+                    onClick={handleAvatarClick}
+                    style={{
+                      backgroundImage: avatar ? `url(${avatar})` : "",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  >
+                    {!userDetails.avatar &&
+                      userDetails.username?.charAt(0).toUpperCase()}
                   </div>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
                 </div>
                 <p className="mb-2">
                   <strong>Username:</strong> {userDetails.username}
@@ -316,10 +400,10 @@ const Sidebar = () => {
                     Close
                   </button>
                   <button
-                    onClick={handleEditClick}
+                    onClick={handleAvatarUpload}
                     className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded"
                   >
-                    Edit
+                    Save
                   </button>
                 </div>
               </div>

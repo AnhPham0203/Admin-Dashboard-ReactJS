@@ -63,6 +63,7 @@ const App = () => {
             </PrivateRoute>
           }
         /> */}
+        <Route path="/" element={<Login />} />
 
         <Route path="/todo-list" element={<ToDoList />} />
 
@@ -83,7 +84,7 @@ const App = () => {
           path="/admin-dashboard/*"
           element={
             // <PrivateRoute>
-              <Sidebar userRole={userRole} />
+            <Sidebar userRole={userRole} />
             // </PrivateRoute>
           }
         >

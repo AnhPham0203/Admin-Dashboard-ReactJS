@@ -231,14 +231,14 @@ const AdminManagement = () => {
               {editing && (
                 <>
                   {/* Old Password */}
-                  <input
+                  {/* <input
                     type="password"
                     name="oldPassword"
                     placeholder="Old Password"
                     value={formData.oldPassword}
                     onChange={handleChange}
                     className="border p-2 rounded"
-                  />
+                  /> */}
 
                   {/* New Password */}
                   <input

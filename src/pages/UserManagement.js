@@ -6,13 +6,16 @@ axios.defaults.withCredentials = true;
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalDelete, setModalDeleteOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
     username: "",
     age: "",
     gender: "",
   });
+  const [message, setMessage] = useState("");
 
   const API_URL = "http://localhost:5000/users/role-user";
   const API_URL_ADD_USER = "http://localhost:5000/users";
@@ -44,10 +47,17 @@ const UserManagement = () => {
       setFormData({ id: null, username: "", age: "", gender: "" });
     }
   };
-
+  // debugger
+  // Mở modal xác nhận delete
+  const openDeleteModal = (user) => {
+    setFormData(user);
+    setDeleting(true);
+    setModalDeleteOpen(true);
+  };
   // Close modal
   const closeModal = () => {
     setModalOpen(false);
+    setModalDeleteOpen(false);
   };
 
   // Handle form input change
@@ -60,7 +70,7 @@ const UserManagement = () => {
   const handleSave = async () => {
     // Kiểm tra mật khẩu và xác nhận mật khẩu
     if (formData.password !== formData.confirmPassword) {
-      alert("Password and Confirm Password do not match!");
+      // setMessage("Password and Confirm Password do not match!");
       return;
     }
 
@@ -78,6 +88,10 @@ const UserManagement = () => {
           `${API_URL_UPDATE_ADMIN}/${formData.id}`,
           formData
         );
+        console.log("change password", response.data);
+        setMessage(response.data);
+        setTimeout(() => setMessage(""), 3000);
+
         setUsers((prev) =>
           prev.map((user) =>
             user.id === response.data.id ? response.data : user
@@ -95,14 +109,20 @@ const UserManagement = () => {
   };
 
   // Delete user
-  const handleDeleteUser = async (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        await axios.delete(`${API_URL_DELETE_ADMIN}/${id}`);
-        setUsers((prev) => prev.filter((user) => user.id !== id));
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      }
+  const handleDeleteUser = async () => {
+    if (!deleting) return null;
+    try {
+      const response = await axios.delete(
+        `${API_URL_DELETE_ADMIN}/${formData.id}`
+      );
+      console.log("===", response.data);
+
+      setModalDeleteOpen(false);
+      setMessage(response.data);
+      setTimeout(() => setMessage(""), 3000);
+      setUsers((prev) => prev.filter((user) => user.id !== formData.id));
+    } catch (error) {
+      console.error("Error deleting user:", error);
     }
   };
 
@@ -117,6 +137,17 @@ const UserManagement = () => {
       >
         Add User
       </button>
+      {message && (
+        <div
+          className={`p-4 mb-4 ${
+            message.includes("successfully")
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          } rounded`}
+        >
+          {message}
+        </div>
+      )}
 
       {/* Users Table */}
       <table className="table-auto w-full border-collapse border border-gray-300">
@@ -146,7 +177,8 @@ const UserManagement = () => {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDeleteUser(user.id)}
+                  // onClick={() => handleDeleteUser(user.id)}
+                  onClick={() => openDeleteModal(user)}
                   className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                 >
                   Delete
@@ -213,16 +245,6 @@ const UserManagement = () => {
 
               {editing && (
                 <>
-                  {/* Old Password */}
-                  <input
-                    type="password"
-                    name="oldPassword"
-                    placeholder="Old Password"
-                    value={formData.oldPassword}
-                    onChange={handleChange}
-                    className="border p-2 rounded"
-                  />
-
                   {/* New Password */}
                   <input
                     type="password"
@@ -258,6 +280,29 @@ const UserManagement = () => {
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
                 Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Confirm Delete</h2>
+            <p className="mb-6">Are you sure you want to delete this user?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteUser}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Delete
               </button>
             </div>
           </div>
